@@ -13,9 +13,19 @@ main() async{
   var jsDir = await new Directory('${directory.path}/javascript').create(recursive: true);
   var jsFile = await new File('${directory.path}/javascript/script.js')
     .writeAsString('''
-  function sayHello() {
-    alert("Hello World!");
-  }''');
+import 'dart:io';
+
+main() async {
+  var server = await HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 8080);
+  print("Serving at ${server.address}:${server.port}");
+
+  await for (var request in server) {
+    request.response
+      ..headers.contentType = new ContentType("text", "plain", charset: "utf-8")
+      ..write('Hello, world')
+      ..close();
+  }
+}''');
 
   //Create a new index.html file with starter code included.
   var htmlFile = await new File('${directory.path}index.html')
